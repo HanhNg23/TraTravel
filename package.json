@@ -9,5 +9,8 @@
     "postinstall": "wix sync-types",
     "dev": "wix dev",
     "lint": "eslint ."
+  },
+  "dependencies": {
+    "@wix/sdk-react": "^0.5.7"
   }
 }
