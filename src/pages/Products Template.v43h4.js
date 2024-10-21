@@ -6,7 +6,7 @@ let externalInformationId;
 let noButtonIdKeyValueMap = {};
 
 $w.onReady(async function () {
-    const templateId = '8af508bb-4706-b7ba-ded5-7d77e8733f16'; 
+    const templateId = $w("#templateId"); 
     try {
         await queryExternalInformationOfTemplate(templateId);
         setUpStationsPlan(1);
