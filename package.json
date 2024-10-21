@@ -11,6 +11,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@wix/sdk-react": "^0.5.7"
+    "@wix/sdk-react": "^0.5.7",
+    "classnames": "^2.5.1",
+    "ricos-viewer": "9",
+    "wix-rich-content-plugin-audio": "9",
+    "wix-rich-content-plugin-code-block": "9",
+    "wix-rich-content-plugin-image": "9",
+    "wix-rich-content-plugin-video": "9"
   }
 }
