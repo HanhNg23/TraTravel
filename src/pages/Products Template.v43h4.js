@@ -6,7 +6,12 @@ let externalInformationId;
 let noButtonIdKeyValueMap = {};
 
 $w.onReady(async function () {
-    const templateId = $w("#templateId"); 
+    //const templateId = $w("#templateId");
+    let itemObj = $w("#productItemDataset").getCurrentItem();
+    const templateId = itemObj ? itemObj._id : null;
+ 
+    console.log(`Template id ${templateId}` )
+    //const templateId = "28107eea-e4fa-e166-4b31-7395121573a6"; 
     try {
         await queryExternalInformationOfTemplate(templateId);
         setUpStationsPlan(1);
@@ -45,8 +50,23 @@ async function queryExternalInformationOfTemplate(templateId) {
 
 async function queryStationsPlan(externalInformationId) {
     try {
-        const results = await wixData.queryReferenced(datasetTemplateExternalInformation, externalInformationId, "stationsPlan");
-        
+
+        let results = await wixData.query(datasetTemplateStationsPlan)
+        .include("templateReference")
+        .find()
+        .then((queryResults) => {
+            // Tạo đối tượng `results` với thuộc tính `items` chứa các phần tử đã lọc
+            return {
+                items: queryResults.items.filter(item => item.templateReference?._id === externalInformationId)
+            };
+        })
+        .catch((error) => {
+            console.error("Error querying dataset:", error);
+            return { items: [] }; // Trả về một đối tượng với `items` là mảng rỗng nếu có lỗi
+        });
+            console.log(results);
+            console.log(results.items.length);
+
         if (results.items.length > 0) {
             const dateOrders = results.items.map(item => item.dateOrder);
             const uniqueDateOrders = [...new Set(dateOrders)];
@@ -81,6 +101,15 @@ function renderTabs(numOfTabs) {
                         $w(`#${otherChild.id}`).style.color = "#183597"; // màu chữ mặc định
                     }
                 });
+                
+                $w("#txtSetOffHeader").text = `Chọn trạm`;
+                $w("#richContentSetOff").content = "";
+
+                $w("#txtExploreHeader").text = `Chọn trạm`;
+                $w("#richContentExplore").content = "";
+
+                $w("#txtEatHeader").text = `Chọn trạm`;
+                $w("#richContentEat").content = "";
 
                 setUpStationsPlan(index + 1);
             });
@@ -92,28 +121,36 @@ function renderTabs(numOfTabs) {
 }
 
 async function setUpStationsPlan(dayNo) {
-    const options = {
-        order: "asc",
-        orderNo: "asc"
-    };
-
     try {
-        const results = await wixData.queryReferenced(datasetTemplateExternalInformation, externalInformationId, "stationsPlan", options);
+        //const results = await wixData.queryReferenced(datasetTemplateExternalInformation, externalInformationId, "stationsPlan", options);
+        let results = await wixData.query(datasetTemplateStationsPlan)
+        .include("templateReference")
+        .find()
+        .then((queryResults) => {
+            // Tạo đối tượng `results` với thuộc tính `items` chứa các phần tử đã lọc
+            return {
+                items: queryResults.items.filter(item => item.templateReference?._id === externalInformationId)
+            };
+        })
+        .catch((error) => {
+            console.error("Error querying dataset:", error);
+            return { items: [] }; // Trả về một đối tượng với `items` là mảng rỗng nếu có lỗi
+        });
         
         if (results.items.length > 0) {
             const filteredRowsByDateOrder = results.items.filter(item => item.dateOrder === dayNo);
             const sortedFilteredRows = filteredRowsByDateOrder.sort((a, b) => a.orderNo - b.orderNo);
-
+            
             console.log("Filtered rows with dateOrder matching dayNo: ", sortedFilteredRows);
             $w("#repeater1").onItemReady(($item, itemData) => {
                 $item('#box').onClick(() => {
-                    $w("#txtSetOffHeader").text = `Ngày ${itemData.dateOrder} - ${itemData.title} - ${itemData.locationName} - Di chuyển`;
+                    $w("#txtSetOffHeader").text = `Ngày ${itemData.dateOrder} - Trạm ${itemData.orderNo} - ${itemData.locationName} - Di chuyển`;
                     $w("#richContentSetOff").content = itemData.transportInstruction;
 
-                    $w("#txtExploreHeader").text = `Ngày ${itemData.dateOrder} - ${itemData.title} - ${itemData.locationName} - Thăm Quan`;
+                    $w("#txtExploreHeader").text = `Ngày ${itemData.dateOrder} - Trạm ${itemData.orderNo} - ${itemData.locationName} - Thăm Quan`;
                     $w("#richContentExplore").content = itemData.sightSeeingSpots;
 
-                    $w("#txtEatHeader").text = `Ngày ${itemData.dateOrder} - ${itemData.title} - ${itemData.locationName} - Ăn uống`;
+                    $w("#txtEatHeader").text = `Ngày ${itemData.dateOrder} - Trạm ${itemData.orderNo} - ${itemData.locationName} - Ăn uống`;
                     $w("#richContentEat").content = itemData.eatAndRestPlace;
                 });
             });
