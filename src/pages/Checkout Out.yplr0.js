@@ -15,36 +15,28 @@ $w.onReady(async function () {
     console.log("Current item id:", templateId);
     console.log("Current item:", currentItem);
 
-    const member = await getCurrentMember();
-    if (!member) {
-        console.log("No member found or not logged in.");
-        return;
+    try {
+        const member = await getCurrentMember();
+        if (!member) throw new Error("No member found or not logged in.");
+
+        const checkoutInfo = await initializeCheckoutData(member);
+        if (!checkoutInfo) throw new Error("Failed to initialize checkout data.");
+
+        const newCheckout = await createCheckout(checkoutInfo);
+        if (!newCheckout) throw new Error("Failed to create checkout.");
+
+        const newOrder = await createOrderFromCheckout(newCheckout);
+        if (!newOrder) throw new Error("Failed to create order.");
+
+        setUpPaymentUrl(newOrder, newCheckout);
+
+        $w("#btnCancel").onClick(() => {
+            cancelOrderNow(newOrder);
+            wixLocation.to("/");
+        });
+    } catch (error) {
+        console.error(error.message);
     }
-
-    const checkoutInfo = await initializeCheckoutData(member);
-    if (!checkoutInfo) {
-        console.log("Failed to initialize checkout data.");
-        return;
-    }
-
-    const newCheckout = await createCheckout(checkoutInfo);
-    if (!newCheckout) {
-        console.log("Failed to create checkout.");
-        return;
-    }
-
-    const newOrder = await createOrderFromCheckout(newCheckout);
-    if (!newOrder) {
-        console.log("Failed to create order.");
-        return;
-    }
-
-    setUpPaymentUrl(newOrder, newCheckout);
-
-    $w("#btnCancel").onClick(() => {
-        cancelOrderNow(newOrder);
-        wixLocation.to("/");
-    });
 });
 
 async function getCurrentMember() {
@@ -53,15 +45,13 @@ async function getCurrentMember() {
         console.log("Fetched member:", member);
         return member || null;
     } catch (error) {
-        console.log("Error fetching member:", error);
-        return null;
+        throw new Error("Error fetching member: " + error.message);
     }
 }
 
 async function initializeCheckoutData(member) {
     if (!member || !member.loginEmail || !member.contactDetails) {
-        console.log("Invalid member data provided.");
-        return null;
+        throw new Error("Invalid member data provided.");
     }
 
     const email = member.loginEmail;
@@ -88,8 +78,7 @@ async function initializeCheckoutData(member) {
 
 async function createCheckout(checkoutInfo) {
     if (!checkoutInfo || !checkoutInfo.lineItems || !checkoutInfo.checkoutInfo) {
-        console.log("Invalid checkout info.");
-        return null;
+        throw new Error("Invalid checkout info.");
     }
 
     console.log("Creating checkout with:", checkoutInfo);
@@ -98,15 +87,13 @@ async function createCheckout(checkoutInfo) {
         console.log("Checkout created successfully:", newCheckout);
         return newCheckout;
     } catch (error) {
-        console.log("Error creating checkout:", error);
-        return null;
+        throw new Error("Error creating checkout: " + error.message);
     }
 }
 
 async function createOrderFromCheckout(checkout) {
     if (!checkout || !checkout._id) {
-        console.log("Invalid checkout data. Cannot create order.");
-        return null;
+        throw new Error("Invalid checkout data. Cannot create order.");
     }
 
     console.log("Creating order from checkout:", checkout);
@@ -115,21 +102,19 @@ async function createOrderFromCheckout(checkout) {
         console.log("Order created successfully:", createOrderResponse);
         return createOrderResponse;
     } catch (error) {
-        console.log("Error creating order:", error);
-        return null;
+        throw new Error("Error creating order: " + error.message);
     }
 }
 
 function setUpPaymentUrl(order, checkoutInfo) {
     if (!order || !checkoutInfo || !checkoutInfo.priceSummary || !checkoutInfo.priceSummary.total) {
-        console.log("Invalid checkout or order info. Cannot create payment.");
-        return;
+        throw new Error("Invalid checkout or order info. Cannot create payment.");
     }
 
     const params = {
         vnp_OrderInfo: `Payment for order #${order.orderId}`,
         ordertype: "billpayment",
-        amount: `${(checkoutInfo.priceSummary.total.amount + 10000) * 100}`,
+        amount: `${(checkoutInfo.priceSummary.total.amount) * 100}`,
         return_url: `https://nguyenhoanganhgoah.wixstudio.io/tratravel/thankyou-payment/${currentItem.slug}`,
         order_id: `${order.orderId}`
     };
@@ -141,14 +126,13 @@ function setUpPaymentUrl(order, checkoutInfo) {
             $w('#btnPayment').link = resultUrlReturn;
         })
         .catch((error) => {
-            console.log("Error in retrieving payment URL:", error);
+            console.error("Error in retrieving payment URL:", error);
         });
 }
 
 function cancelOrderNow(order) {
     if (!order || !order.orderId) {
-        console.log("Invalid order info. Cannot cancel order.");
-        return;
+        throw new Error("Invalid order info. Cannot cancel order.");
     }
 
     const options = {
@@ -162,6 +146,6 @@ function cancelOrderNow(order) {
             console.log("Order cancellation result:", result);
         })
         .catch((error) => {
-            console.log("Error canceling order:", error);
+            console.error("Error canceling order:", error);
         });
 }
