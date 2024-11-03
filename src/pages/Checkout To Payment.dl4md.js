@@ -29,7 +29,7 @@ $w.onReady(async function () {
         //$w("#imgQRCode").show();
 
         $w("#btnPaymentCancel").onClick(async () => {
-            await cancelOrderNow(orderId);
+            await cancelOrderNow(currentOrderObject);
             wixWindowFrontend.openLightbox("Message Cancel Order");
         });
 
@@ -49,24 +49,24 @@ async function triggerEmailSendToStaff(order) {
         console.log("TRIGGER EMAIL");
         await triggeredEmails.emailMember("USLQOMY", "6a99560a-57a8-4a8d-959b-ff3823c82baf", {
             variables: {
-                customer: "HOANG ANH",
-                orderNumber: "12345",
+                customer: order.buyerInfo.email,
+                orderNumber: order.number,
             },
         });
-        // await triggeredEmails.emailMember("USLQOMY", "68063784-e063-4664-ab3e-11959ebb777c", {
-        //     variables: {
-        //         customer: order.buyerInfo.email,
-        //         orderNumber: order.number,
-        //     },
-        // });
+        await triggeredEmails.emailMember("USLQOMY", "68063784-e063-4664-ab3e-11959ebb777c", {
+            variables: {
+                customer: order.buyerInfo.email,
+                orderNumber: order.number,
+            },
+        });
         return "Emails sent successfully";
     } catch (error) {
         throw new Error("Error triggering email: " + error.message);
     }
 }
 
-async function cancelOrderNow(orderId) {
-    if (!orderId) {
+async function cancelOrderNow(order) {
+    if (!order) {
         throw new Error("Invalid order info. Cannot cancel order.");
     }
 
@@ -77,7 +77,7 @@ async function cancelOrderNow(orderId) {
     };
 
     try {
-        const result = await cancelOrder(orderId, options);
+        const result = await cancelOrder(order._id, options);
         console.log("Order cancellation result:", result);
         return result;
     } catch (error) {
