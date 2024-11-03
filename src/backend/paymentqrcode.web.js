@@ -4,9 +4,9 @@ import { fetch } from "wix-fetch";
 const config = {
     clientId: "c6830cb8-7fb5-4aa5-a5be-9cc3e58669b4",
     api_key: "cf5a6a1f-93b0-4be9-bf83-0db57d47daeb",
-    accountNo: "19038057876016",
-    accountName: "NGUYEN HOANG ANH",
-    acqId: "970407",
+    accountNo: "20030142478",
+    accountName: "HUYNH TRUC PHUONG",
+    acqId: "970423",
     template: "print",
     format: "text"
 };
