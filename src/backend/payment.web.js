@@ -31,7 +31,7 @@ const config = {
 };
 
 
-export const PerformVPNPayment = webMethod(Permissions.Anyone, async (params) => {
+export const PerformVPNPayment = webMethod(Permissions.SiteMember, async (params) => {
     try {
         console.log("PerformVPNPayment called with params:", params);
         

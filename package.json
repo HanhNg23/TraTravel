@@ -13,6 +13,7 @@
   "dependencies": {
     "@wix/sdk-react": "^0.5.7",
     "classnames": "^2.5.1",
+    "crypto-js": "^4.2.0",
     "ricos-viewer": "9",
     "vn-payments": "^1.1.0",
     "wix-rich-content-plugin-audio": "9",

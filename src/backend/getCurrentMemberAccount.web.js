@@ -1,19 +1,51 @@
-import { accounts } from "wix-loyalty.v2";
+import { members } from "wix-members.v2";
 import { webMethod, Permissions } from "wix-web-module";
 
+/* Sample options value:
+ * {
+ *  fieldsets: [ 'FULL' ]
+ * }
+ */
 
-export const getCurrentMemberAccount = webMethod(
+export const myGetCurrentMemberFunction = webMethod(
   Permissions.Anyone,
   async () => {
     try {
-      const result = await accounts.getCurrentMemberAccount();
-      return result;
+      const member = await members.getCurrentMember();
+      console.log("Retrieved currently logged in member:", member);
+
+      return member;
     } catch (error) {
       console.error(error);
-      // Handle the error
+      throw new Error("error");
     }
   },
 );
+
+/* Promise resolves to:
+ *
+ *  {
+ *  "_createdDate": "2024-02-22T13:52:00.000Z",
+ *  "_id": "7d368843-6f0c-4037-8d0e-b7e36a8a0c32",
+ *   "_updatedDate": "2024-02-22T13:52:00.674Z",
+ *  "activityStatus": "UNKNOWN",
+ *   "contactId": "ff20c02e-3d13-4412-9529-d628aa0abc12",
+ *   "privacyStatus": "UNKNOWN",
+ *   "profile": {
+ *     "nickname": "Maverick",
+ *     "slug": "maverick123",
+ *     "photo": {
+ *       "url": "https://example.com/photo.jpg",
+ *       "height": 0,
+ *       "width": 0,
+ *       "_id": ""
+ *     }
+ *   },
+ *   "status": "UNKNOWN"
+ * }
+ *
+ */
+
 
 /*
  * Promise resolves to:

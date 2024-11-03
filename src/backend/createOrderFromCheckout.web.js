@@ -1,32 +1,17 @@
 import { Permissions, webMethod } from "wix-web-module";
 import { checkout } from "wix-ecom-backend";
 import { orders } from "wix-ecom-backend";
-
-// export const myGetOrderFunction = webMethod(
-//   Permissions.Anyone,
-//   async (orderId) => {
-//     try {
-//       const retrievedOrder = await orders.getOrder(orderId);
-//       console.log("Success! Retrieved order:", retrievedOrder);
-//       return retrievedOrder;
-//     } catch (error) {
-//       console.error(error);
-//       // Handle the error
-//     }
-//   },
-// );
+import { elevate } from "wix-auth";
 
 export const myCreateOrderFromCheckoutFunction = webMethod(
-  Permissions.Anyone,
+  Permissions.Admin,
   async (checkoutId) => {
     try {
       const createOrderResponse = await checkout.createOrder(checkoutId);
       console.log("Success! Created an order from the checkout");
-      const retrievedOrder = await orders.getOrder(createOrderResponse.orderId);
-      console.log("Success! Retrieved order:", retrievedOrder);
       return createOrderResponse;
     } catch (error) {
-      console.error(error);
+      throw new Error("error");
     }
   },
 );
@@ -40,3 +25,22 @@ export const myCreateOrderFromCheckoutFunction = webMethod(
  * }
  *
  */
+
+export const myGetOrderFunction = webMethod(
+  Permissions.Admin,
+  async (orderId) => {
+    try {
+      const retrievedOrder = await orders.getOrder(orderId);
+      console.log("Success! Retrieved order:", retrievedOrder);
+      return retrievedOrder;
+    } catch (error) {
+      throw new Error("error");
+      // Handle the error
+    }
+  },
+);
+
+
+
+
+

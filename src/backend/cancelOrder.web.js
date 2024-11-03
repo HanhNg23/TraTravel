@@ -5,14 +5,15 @@ import { elevate } from "wix-auth";
 const elevatedCancelOrder = elevate(orders.cancelOrder);
 
 export const cancelOrder = webMethod(
-  Permissions.Anyone,
+  Permissions.Admin,
   async (id, options) => {
     try {
       const result = await elevatedCancelOrder(id, options);
       return result;
     } catch (error) {
       console.error(error);
-      // Handle the error
+      throw new Error("error");
     }
   },
 );
+

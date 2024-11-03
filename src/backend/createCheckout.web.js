@@ -1,12 +1,8 @@
-/**************************************
- * Backend code - my-backend-file.web.js *
- **************************************/
-
 import { Permissions, webMethod } from "wix-web-module";
 import { checkout } from "wix-ecom-backend";
 
 export const myCreateCheckoutFunction = webMethod(
-  Permissions.Anyone,
+  Permissions.Admin,
   async (options) => {
     try {
       const newCheckout = await checkout.createCheckout(options);
@@ -14,10 +10,43 @@ export const myCreateCheckoutFunction = webMethod(
       return newCheckout;
     } catch (error) {
       console.error(error);
+      throw new Error(error);
       // Handle the error
     }
   },
 );
+
+
+export const myMarkCheckoutAsCompletedFunction = webMethod(
+  Permissions.Admin,
+  async (checkoutId) => {
+    try {
+      await checkout.markCheckoutAsCompleted(checkoutId);
+      console.log("Success! Checkout marked as completed");
+      return;
+    } catch (error) {
+      console.error(error);
+      throw new Error(error);
+      // Handle the error
+    }
+  },
+);
+
+
+export const myGetCheckoutUrl = webMethod(
+  Permissions.Admin,
+  async (id) => {
+    try {
+      const result = await checkout.getCheckoutUrl(id);
+      return result;
+    } catch (error) {
+      console.error(error);
+      // Handle the error
+      throw new Error(error);
+    }
+  },
+);
+
 
 /*************
  * Page code *
