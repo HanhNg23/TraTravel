@@ -35,7 +35,7 @@ async function queryExternalInformationOfTemplate(templateId) {
             $w("#ratingsDisplay1").rating = foundedRecord.rating;
             $w("#period").text = `Có giá trị sử dụng trong vòng ${foundedRecord.numberDaysValid} ngày`;
             $w("#button19").label = `Quãng đường: ${foundedRecord.distance} ${foundedRecord.unitMeasureOfDistance}`;
-            $w("#button18").label = `Chi phí dự kiến: ~ ${foundedRecord.estimatedCost} VNĐ / người`;
+            $w("#button18").label = `Chi phí dự kiến: ~ ${foundedRecord.estimatedCost} đ / người`;
             externalInformationId = foundedRecord._id;
             await queryStationsPlan(foundedRecord._id); // Chuyển sang async
         } else {
