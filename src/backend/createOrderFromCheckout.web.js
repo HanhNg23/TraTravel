@@ -7,7 +7,11 @@ export const myCreateOrderFromCheckoutFunction = webMethod(
   Permissions.Admin,
   async (checkoutId) => {
     try {
-      const createOrderResponse = await checkout.createOrder(checkoutId);
+      let options = {
+        suppressAuth: true,
+        suppressHooks: true
+        };
+      const createOrderResponse = await checkout.createOrder(checkoutId, options);
       console.log("Success! Created an order from the checkout");
       return createOrderResponse;
     } catch (error) {

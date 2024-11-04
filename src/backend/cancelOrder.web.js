@@ -6,14 +6,17 @@ const elevatedCancelOrder = elevate(orders.cancelOrder);
 
 export const cancelOrder = webMethod(
   Permissions.Admin,
-  async (id, options) => {
+  async (id) => {
     try {
+      let options = {
+        suppressAuth: true,
+        suppressHooks: true
+      };
       const result = await elevatedCancelOrder(id, options);
       return result;
     } catch (error) {
       console.error(error);
-      throw new Error("error");
+      throw new Error("Error occurred while cancelling the order");
     }
-  },
+  }
 );
-
