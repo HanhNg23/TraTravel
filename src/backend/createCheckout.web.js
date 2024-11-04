@@ -5,10 +5,6 @@ export const myCreateCheckoutFunction = webMethod(
   Permissions.Admin,
   async (options) => {
     try {
-      let options = {
-        suppressAuth: true,
-        suppressHooks: true
-        };
       const newCheckout = await checkout.createCheckout(options);
       console.log("Success! Checkout created, checkout:", newCheckout);
       return newCheckout;

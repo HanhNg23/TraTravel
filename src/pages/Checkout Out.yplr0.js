@@ -128,6 +128,7 @@ async function initializeCheckoutData(member) {
         buyerInfo: {
             email: email,
         },
+        “suppressAuth”: true
         // createdBy: {
         //     memberId: "c4f3f2fc-e4e1-4fbd-8118-a983e9f57c91"
         // }

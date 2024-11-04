@@ -9,8 +9,7 @@ export const cancelOrder = webMethod(
   async (id) => {
     try {
       let options = {
-        suppressAuth: true,
-        suppressHooks: true
+        suppressAuth: true
       };
       const result = await elevatedCancelOrder(id, options);
       return result;
